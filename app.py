@@ -465,10 +465,6 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-
-st.markdown("<div class='small' style='margin-top:10px;'>カード番号 → 収録弾 → コメント → 投稿文生成</div>", unsafe_allow_html=True)
-
-
 # セッション状態初期化
 if "step" not in st.session_state:
     st.session_state.step = 1
