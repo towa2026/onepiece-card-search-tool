@@ -461,7 +461,7 @@ logo_b64 = img_to_base64(logo_path)
 st.markdown(f"""
 <div class="hero">
   <img src="data:image/jpeg;base64,{logo_b64}" alt="ONE PIECE CARD GAME" />
-  <div class="sub">ONE PIECE CARD GAME Search Tool</div>
+  <div class="sub">ONE PIECE CARD GAME\n\nSearch Tool</div>
 </div>
 """, unsafe_allow_html=True)
 
