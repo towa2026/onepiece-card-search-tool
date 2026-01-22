@@ -229,6 +229,43 @@ div[data-testid="stTextArea"] div[data-baseweb="textarea"] > div:focus-within {
   }
 }
             
+/* カード画像のグリッドレイアウト */
+.card-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-start;
+}
+
+.card-item {
+  /* デフォルト（PC）は3列 */
+  width: calc(33.333% - 10px);
+  box-sizing: border-box;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.card-item img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.card-caption {
+  font-size: 10px;
+  margin-top: 5px;
+  line-height: 1.2;
+  opacity: 0.8;
+}
+
+/* スマホ（幅700px以下）では2列にする */
+@media (max-width: 700px) {
+  .card-item {
+    width: calc(50% - 10px);
+  }
+}
+            
 </style>
 
 """, unsafe_allow_html=True)
@@ -681,19 +718,28 @@ if st.session_state.step == 2 and st.session_state.card_data:
         st.info("収録情報が取れなかった（構造変更の可能性あり）")
 
     # 画像
+# 画像
     st.write("### カード画像")
     variants = data.get("variants", [])
 
     if variants:
-        
-        cols = st.columns(3, gap="small")
-        for i, v in enumerate(variants):
+        # HTMLを組み立てる
+        html_content = '<div class="card-grid">'
+        for v in variants:
             url = v["image_url"]
             packs_for_img = v.get("packs", [])
             caption = " / ".join(packs_for_img) if packs_for_img else "（収録情報なし）"
-
-            with cols[i % 3]:
-                st.image(url, use_container_width=True, caption=caption)
+            
+            html_content += f'''
+                <div class="card-item">
+                    <img src="{url}" />
+                    <div class="card-caption">{caption}</div>
+                </div>
+            '''
+        html_content += '</div>'
+        
+        # HTMLを表示
+        st.markdown(html_content, unsafe_allow_html=True)
     else:
         st.info("画像が取れなかった（構造変更の可能性あり）")
 
