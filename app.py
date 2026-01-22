@@ -760,20 +760,19 @@ if st.session_state.step == 2 and st.session_state.card_data:
 
     st.markdown("</div>", unsafe_allow_html=True)
 
+# ============================
+# Floating TOP button（スクロールだけ）
+# ============================
 st.markdown(
     """
-    <a href="?go_top=1" class="topFab" aria-label="TOPへ戻る" style="text-decoration:none;">↑</a>
+    <button class="topFab"
+        onclick="window.scrollTo({ top: 0, behavior: 'smooth' });"
+        aria-label="TOPへ戻る">
+        ↑
+    </button>
     """,
     unsafe_allow_html=True,
 )
 
-if st.query_params.get("go_top") == ["1"]:
-    st.session_state.step = 1
-    st.session_state.search_mode = "A"
-    st.session_state.card_data = None
-    st.session_state.generated_text = ""
-    st.session_state.pop("candidates", None)
-    st.query_params.clear()
-    st.rerun()
 
 
