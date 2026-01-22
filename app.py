@@ -229,31 +229,6 @@ div[data-testid="stTextArea"] div[data-baseweb="textarea"] > div:focus-within {
   }
 }
 
-.topFab {
-  position: fixed;
-  right: 18px;
-  bottom: 18px;
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(255,255,255,0.12);
-  color: white;
-  font-size: 22px;
-  font-weight: 900;
-  cursor: pointer;
-  box-shadow: 0 10px 22px rgba(0,0,0,0.35);
-  backdrop-filter: blur(6px);
-  z-index: 9999;
-}
-
-.topFab:hover {
-  background: rgba(255,255,255,0.2);
-}
-
-.topFab { z-index: 999999 !important; }
-
-
 </style>
 
 """, unsafe_allow_html=True)
@@ -653,6 +628,33 @@ if st.session_state.step == 1:
 
     st.markdown("</div>", unsafe_allow_html=True)  # section end
 
+# 画面幅を取得して列数を決める（スマホ=2, PC=3）
+if "grid_cols" not in st.session_state:
+    st.session_state.grid_cols = 3  # default
+
+components.html(
+    """
+    <script>
+      const w = window.innerWidth;
+      const cols = (w <= 700) ? 2 : 3;
+      // Streamlitへ値を渡す（query param方式）
+      const url = new URL(window.location.href);
+      if (url.searchParams.get("cols") !== String(cols)) {
+        url.searchParams.set("cols", String(cols));
+        window.history.replaceState({}, "", url.toString());
+      }
+    </script>
+    """,
+    height=0,
+)
+
+# URLの cols を読み取って session_state に反映
+cols_param = st.query_params.get("cols")
+if cols_param:
+    try:
+        st.session_state.grid_cols = int(cols_param[0])
+    except:
+        st.session_state.grid_cols = 3
 
 
 # -----------------------------
@@ -682,13 +684,17 @@ if st.session_state.step == 2 and st.session_state.card_data:
     st.write("### 画像（取得できた分すべて）")
     variants = data.get("variants", [])
     if variants:
-        cols = st.columns(3)
+        grid_cols = st.session_state.get("grid_cols", 3)
+        cols = st.columns(grid_cols)
+
         for i, v in enumerate(variants):
             url = v["image_url"]
             packs_for_img = v.get("packs", [])
             caption = " / ".join(packs_for_img) if packs_for_img else "（収録情報なし）"
-            with cols[i % 3]:
+
+            with cols[i % grid_cols]:
                 st.image(url, use_container_width=True, caption=caption)
+
     else:
         st.info("画像が取れなかった（構造変更の可能性あり）")
 
@@ -762,51 +768,6 @@ if st.session_state.step == 2 and st.session_state.card_data:
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ============================
-# Floating TOP button（スクロールだけ）
-# ============================
-# Floating TOP button（スクロールだけ）
-st.markdown(
-    """
-    <button class="topFab" id="topFabBtn" aria-label="TOPへ戻る">↑</button>
-    """,
-    unsafe_allow_html=True,
-)
-
-# JS：Streamlitのスクロールコンテナを上に戻す
-components.html(
-    """
-    <script>
-      const btn = window.parent.document.getElementById("topFabBtn");
-      if (btn && !btn.dataset.bound) {
-        btn.dataset.bound = "1";
-        btn.addEventListener("click", (e) => {
-          e.preventDefault();
-
-          // Streamlitのスクロール要素（環境差があるので複数候補）
-          const targets = [
-            window.parent.document.querySelector('[data-testid="stAppViewContainer"]'),
-            window.parent.document.querySelector('section.main'),
-            window.parent.document.querySelector('div.block-container')?.parentElement,
-            window.parent.document.scrollingElement,
-          ].filter(Boolean);
-
-          // 見つかったものを順にスクロール（最初の有効なやつでOK）
-          for (const t of targets) {
-            try {
-              t.scrollTo({ top: 0, behavior: "smooth" });
-              break;
-            } catch (_) {}
-          }
-
-          // フォールバック
-          try { window.parent.scrollTo({ top: 0, behavior: "smooth" }); } catch (_) {}
-        });
-      }
-    </script>
-    """,
-    height=0,
-)
 
 
 
