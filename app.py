@@ -764,16 +764,49 @@ if st.session_state.step == 2 and st.session_state.card_data:
 # ============================
 # Floating TOP button（スクロールだけ）
 # ============================
+# Floating TOP button（スクロールだけ）
 st.markdown(
     """
-    <button class="topFab"
-        onclick="window.scrollTo({ top: 0, behavior: 'smooth' });"
-        aria-label="TOPへ戻る">
-        ↑
-    </button>
+    <button class="topFab" id="topFabBtn" aria-label="TOPへ戻る">↑</button>
     """,
     unsafe_allow_html=True,
 )
+
+# JS：Streamlitのスクロールコンテナを上に戻す
+components.html(
+    """
+    <script>
+      const btn = window.parent.document.getElementById("topFabBtn");
+      if (btn && !btn.dataset.bound) {
+        btn.dataset.bound = "1";
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+
+          // Streamlitのスクロール要素（環境差があるので複数候補）
+          const targets = [
+            window.parent.document.querySelector('[data-testid="stAppViewContainer"]'),
+            window.parent.document.querySelector('section.main'),
+            window.parent.document.querySelector('div.block-container')?.parentElement,
+            window.parent.document.scrollingElement,
+          ].filter(Boolean);
+
+          // 見つかったものを順にスクロール（最初の有効なやつでOK）
+          for (const t of targets) {
+            try {
+              t.scrollTo({ top: 0, behavior: "smooth" });
+              break;
+            } catch (_) {}
+          }
+
+          // フォールバック
+          try { window.parent.scrollTo({ top: 0, behavior: "smooth" }); } catch (_) {}
+        });
+      }
+    </script>
+    """,
+    height=0,
+)
+
 
 
 
