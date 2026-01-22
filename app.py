@@ -228,27 +228,28 @@ div[data-testid="stTextArea"] div[data-baseweb="textarea"] > div:focus-within {
   }
 }
 
-/* ===== Floating TOP button ===== */
 .topFab {
   position: fixed;
   right: 18px;
   bottom: 18px;
-  width: 54px;
-  height: 54px;
-  border-radius: 999px;
-  border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(255,255,255,0.06);
-  color: rgba(255,255,255,0.92);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.12);
+  color: white;
   font-size: 22px;
   font-weight: 900;
-  display: grid;
-  place-items: center;
   cursor: pointer;
+  box-shadow: 0 10px 22px rgba(0,0,0,0.35);
+  backdrop-filter: blur(6px);
   z-index: 9999;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 16px 34px rgba(0,0,0,0.45);
 }
-.topFab:hover { background: rgba(255,255,255,0.10); }
+
+.topFab:hover {
+  background: rgba(255,255,255,0.2);
+}
+
 
 
 
