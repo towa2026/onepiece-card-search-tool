@@ -536,7 +536,7 @@ if st.session_state.step == 1:
 
     with colA:
         if st.button(
-            "[A] カード番号で検索",
+            "カード番号で検索",
             key="modeA_card",
             type="primary" if isA else "secondary",
             use_container_width=True,
@@ -547,7 +547,7 @@ if st.session_state.step == 1:
 
     with colB:
         if st.button(
-            "[B] カード名＋色で検索",
+            "カード名＋色で検索",
             key="modeB_card",
             type="primary" if isB else "secondary",
             use_container_width=True,
@@ -567,7 +567,7 @@ if st.session_state.step == 1:
     # A) カード番号で検索
     # -----------------------------
     if st.session_state.search_mode == "A":
-        st.subheader("Step 1A　カード番号で検索")
+        st.subheader("カード番号で検索")
 
         # ▼ デッキ名はStep1では不要。接頭語＋番号だけにする
         c1, c2 = st.columns([1, 3], gap="small")
@@ -617,7 +617,7 @@ if st.session_state.step == 1:
     # B) カード名＋色で候補検索
     # -----------------------------
     else:
-        st.subheader("Step 1B　カード名＋色で検索 → 候補から選ぶ")
+        st.subheader("カード名＋色で検索")
 
         name_q = st.text_input("カード名（例：ゾロ十郎）", value="", placeholder="ゾロ十郎", key="name_query")
         colors_q = st.multiselect("色（複数選択OK）", COLOR_OPTIONS, default=[], key="color_query")
@@ -637,7 +637,7 @@ if st.session_state.step == 1:
         candidates = st.session_state.get("candidates", [])
 
         if candidates:
-            st.caption(f"候補：{len(candidates)}件（選ぶとStep2へ）")
+            st.caption(f"候補：{len(candidates)}件（選ぶと収録弾検索結果へ）")
             cols = st.columns(3)
 
             for i, c in enumerate(candidates):
