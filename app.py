@@ -701,7 +701,7 @@ if st.session_state.step == 2 and st.session_state.card_data:
     data = st.session_state.card_data
     deck_title = st.session_state.get("deck_title", "")
 
-    st.subheader("Step 2　結果を見てコメントを作る")
+    st.subheader("Step 2　検索結果")
 
     st.markdown(
         f"**{data['card_no']}**  **{data['card_name']}**  "
@@ -770,6 +770,8 @@ if st.session_state.step == 2 and st.session_state.card_data:
         st.info("画像が取れなかった（構造変更の可能性あり）")
 
     st.divider()
+
+    st.subheader("投稿を作る")
 
     deck_title = st.text_input(
         "デッキ名（任意・投稿用）",
