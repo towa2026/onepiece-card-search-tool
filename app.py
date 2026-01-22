@@ -228,6 +228,20 @@ div[data-testid="stTextArea"] div[data-baseweb="textarea"] > div:focus-within {
     gap: 14px !important;
   }
 }
+            
+/* ===== Force 2-column grid for images (mobile) ===== */
+@media (max-width: 700px) {
+  .imgGrid2 div[data-testid="stHorizontalBlock"]{
+    flex-wrap: wrap !important;
+    gap: 10px !important;
+  }
+  .imgGrid2 div[data-testid="column"]{
+    width: calc(50% - 5px) !important;
+    flex: 0 0 calc(50% - 5px) !important;
+    min-width: calc(50% - 5px) !important;
+  }
+}
+
 
 </style>
 
@@ -685,14 +699,17 @@ if st.session_state.step == 2 and st.session_state.card_data:
     variants = data.get("variants", [])
 
     if variants:
-        cols = st.columns(2, gap="small")
+        st.markdown("<div class='imgGrid2'>", unsafe_allow_html=True)
+        
+        cols = st.columns(3, gap="small")
         for i, v in enumerate(variants):
             url = v["image_url"]
             packs_for_img = v.get("packs", [])
             caption = " / ".join(packs_for_img) if packs_for_img else "（収録情報なし）"
 
-            with cols[i % 2]:
+            with cols[i % 3]:
                 st.image(url, use_container_width=True, caption=caption)
+        st.markdown("</div>", unsafe_allow_html=True)
     else:
         st.info("画像が取れなかった（構造変更の可能性あり）")
 
