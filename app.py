@@ -722,32 +722,50 @@ if st.session_state.step == 2 and st.session_state.card_data:
     variants = data.get("variants", [])
 
     if variants:
-        # HTMLを組み立てる
-        html_list = []
-        html_list.append('<div class="card-grid">')
-        
+        # HTMLとCSSをセットで組み立てる
+        html_items = ""
         for v in variants:
             url = v["image_url"]
             packs_for_img = v.get("packs", [])
             caption = " / ".join(packs_for_img) if packs_for_img else "（収録情報なし）"
             
-            # f-stringを使わず、formatメソッドを使うことで波括弧の衝突を避けます
-            item_html = '''
+            html_items += f'''
                 <div class="card-item">
-                    <img src="{img_url}" />
-                    <div class="card-caption">{img_caption}</div>
+                    <img src="{url}" style="width:100%; border-radius:8px;" />
+                    <div class="card-caption" style="font-size:10px; margin-top:5px; color:#ccc;">{caption}</div>
                 </div>
-            '''.format(img_url=url, img_caption=caption)
-            
-            html_list.append(item_html)
-            
-        html_list.append('</div>')
+            '''
+
+        # components.htmlの中でCSSも一緒に定義する
+        full_html = f'''
+            <style>
+                .card-grid {{
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 10px;
+                    justify-content: flex-start;
+                    background: transparent;
+                }}
+                .card-item {{
+                    width: calc(33.33% - 10px);
+                    box-sizing: border-box;
+                    margin-bottom: 15px;
+                    text-align: center;
+                }}
+                @media (max-width: 600px) {{
+                    .card-item {{
+                        width: calc(50% - 10px);
+                    }}
+                }}
+            </style>
+            <div class="card-grid">
+                {html_items}
+            </div>
+        '''
         
-        # リストを結合して一つの文字列にする
-        full_html = "".join(html_list)
-        
-        # HTMLを表示
-        st.markdown(full_html, unsafe_allow_html=True)
+        # st.markdown ではなく components.html を使用
+        # heightは画像枚数に応じて調整が必要ですが、一旦多めに設定
+        components.html(full_html, height=600, scrolling=True)
     else:
         st.info("画像が取れなかった（構造変更の可能性あり）")
 
