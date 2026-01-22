@@ -820,7 +820,7 @@ if st.session_state.step == 2 and st.session_state.card_data:
     colA, colB = st.columns(2)
 
     with colA:
-        if st.button("Step1Aへ戻る", key="back_to_A"):
+        if st.button("カード番号検索へ戻る", key="back_to_A"):
             st.session_state.step = 1
             st.session_state.return_tab = "A"
             st.session_state.search_mode = "A"
@@ -829,7 +829,7 @@ if st.session_state.step == 2 and st.session_state.card_data:
             st.rerun()
 
     with colB:
-        if st.button("Step1Bへ戻る", key="back_to_B"):
+        if st.button("カード名検索へ戻る", key="back_to_B"):
             st.session_state.step = 1
             st.session_state.return_tab = "B"
             st.session_state.search_mode = "B"
