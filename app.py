@@ -760,28 +760,20 @@ if st.session_state.step == 2 and st.session_state.card_data:
 
     st.markdown("</div>", unsafe_allow_html=True)
 
-# ============================
-# Floating TOP button (always)
-# ============================
 st.markdown(
     """
-    <form method="post">
-      <button class="topFab" name="go_top" value="1" aria-label="TOPへ戻る">↑</button>
-    </form>
+    <a href="?go_top=1" class="topFab" aria-label="TOPへ戻る" style="text-decoration:none;">↑</a>
     """,
     unsafe_allow_html=True,
 )
 
-# クリックされたらTOPへ
-q = st.query_params
-if q.get("go_top") == ["1"]:
+if st.query_params.get("go_top") == ["1"]:
     st.session_state.step = 1
     st.session_state.search_mode = "A"
     st.session_state.card_data = None
     st.session_state.generated_text = ""
-    # 必要なら候補も消す
     st.session_state.pop("candidates", None)
-    # クエリを戻す
     st.query_params.clear()
     st.rerun()
+
 
