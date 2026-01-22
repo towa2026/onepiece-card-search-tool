@@ -718,28 +718,36 @@ if st.session_state.step == 2 and st.session_state.card_data:
         st.info("収録情報が取れなかった（構造変更の可能性あり）")
 
     # 画像
-# 画像
     st.write("### カード画像")
     variants = data.get("variants", [])
 
     if variants:
         # HTMLを組み立てる
-        html_content = '<div class="card-grid">'
+        html_list = []
+        html_list.append('<div class="card-grid">')
+        
         for v in variants:
             url = v["image_url"]
             packs_for_img = v.get("packs", [])
             caption = " / ".join(packs_for_img) if packs_for_img else "（収録情報なし）"
             
-            html_content += f'''
+            # f-stringを使わず、formatメソッドを使うことで波括弧の衝突を避けます
+            item_html = '''
                 <div class="card-item">
-                    <img src="{url}" />
-                    <div class="card-caption">{caption}</div>
+                    <img src="{img_url}" />
+                    <div class="card-caption">{img_caption}</div>
                 </div>
-            '''
-        html_content += '</div>'
+            '''.format(img_url=url, img_caption=caption)
+            
+            html_list.append(item_html)
+            
+        html_list.append('</div>')
+        
+        # リストを結合して一つの文字列にする
+        full_html = "".join(html_list)
         
         # HTMLを表示
-        st.markdown(html_content, unsafe_allow_html=True)
+        st.markdown(full_html, unsafe_allow_html=True)
     else:
         st.info("画像が取れなかった（構造変更の可能性あり）")
 
