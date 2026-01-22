@@ -251,7 +251,7 @@ div[data-testid="stTextArea"] div[data-baseweb="textarea"] > div:focus-within {
   background: rgba(255,255,255,0.2);
 }
 
-
+.topFab { z-index: 999999 !important; }
 
 
 </style>
