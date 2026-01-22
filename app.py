@@ -696,9 +696,6 @@ if st.session_state.step == 2 and st.session_state.card_data:
     else:
         st.info("画像が取れなかった（構造変更の可能性あり）")
 
-    else:
-        st.info("画像が取れなかった（構造変更の可能性あり）")
-
     st.divider()
 
     deck_title = st.text_input(
