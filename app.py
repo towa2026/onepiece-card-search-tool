@@ -578,9 +578,7 @@ if st.session_state.step == 1:
         card_no_norm = f"{prefix}{number_only}".strip().upper()
 
         # 状態を保持（次回も残す）
-        st.session_state.card_no_input = card_no_norm  # 一応フルも保存
-        st.session_state.card_prefix = prefix
-        st.session_state.card_number_only = number_only
+        st.session_state["card_no_full"] = card_no_norm
 
         if st.button("収録弾を検索する", type="primary", key="search_by_no"):
             st.session_state.return_tab = "A"
