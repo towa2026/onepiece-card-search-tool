@@ -840,8 +840,3 @@ if st.session_state.step == 2 and st.session_state.card_data:
 
 
     st.markdown("</div>", unsafe_allow_html=True)
-
-
-
-
-
