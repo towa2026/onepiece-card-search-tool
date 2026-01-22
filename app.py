@@ -681,19 +681,20 @@ if st.session_state.step == 2 and st.session_state.card_data:
         st.info("収録情報が取れなかった（構造変更の可能性あり）")
 
     # 画像
-    st.write("### 画像（取得できた分すべて）")
+    st.write("### カード画像")
     variants = data.get("variants", [])
-    if variants:
-        grid_cols = st.session_state.get("grid_cols", 3)
-        cols = st.columns(grid_cols)
 
+    if variants:
+        cols = st.columns(2, gap="small")
         for i, v in enumerate(variants):
             url = v["image_url"]
             packs_for_img = v.get("packs", [])
             caption = " / ".join(packs_for_img) if packs_for_img else "（収録情報なし）"
 
-            with cols[i % grid_cols]:
+            with cols[i % 2]:
                 st.image(url, use_container_width=True, caption=caption)
+    else:
+        st.info("画像が取れなかった（構造変更の可能性あり）")
 
     else:
         st.info("画像が取れなかった（構造変更の可能性あり）")
