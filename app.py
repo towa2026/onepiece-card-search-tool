@@ -228,6 +228,27 @@ div[data-testid="stTextArea"] div[data-baseweb="textarea"] > div:focus-within {
   }
 }
 
+/* ===== Floating TOP button ===== */
+.topFab {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  width: 54px;
+  height: 54px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.92);
+  font-size: 22px;
+  font-weight: 900;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  z-index: 9999;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 16px 34px rgba(0,0,0,0.45);
+}
+.topFab:hover { background: rgba(255,255,255,0.10); }
 
 
 
@@ -353,6 +374,7 @@ def fetch_card_data(card_no: str) -> Dict:
         "variants": variants,     # 画像ごとのpack紐づけ用
     }
 
+PREFIX_OPTIONS = ["OP", "ST", "P", "EB", "PRB"]
 COLOR_OPTIONS = ["赤", "緑", "青", "紫", "黒", "黄", "mix"]
 
 @st.cache_data(ttl=60 * 60, show_spinner=False)  # 1hキャッシュ（短めでOK）
@@ -432,7 +454,10 @@ def fetch_candidates_by_name_color(name: str, colors: List[str]) -> List[Dict]:
 
 def build_post_text(deck_title: str, card_no: str, card_name: str, packs: List[str], comment: str, hashtag: str) -> str:
     lines = []
-    lines.append(f"デッキ構築メモ")
+    if deck_title.strip():
+        lines.append(f"デッキ構築メモ")
+    else:
+        lines.append("デッキ構築メモ")
     lines.append("")
     lines.append(f"{card_no} {card_name}")
     lines.append("")
@@ -497,7 +522,7 @@ if st.session_state.step == 1:
 
     with colA:
         if st.button(
-            "A) カード番号で検索",
+            "[A] カード番号で検索",
             key="modeA_card",
             type="primary" if isA else "secondary",
             use_container_width=True,
@@ -508,7 +533,7 @@ if st.session_state.step == 1:
 
     with colB:
         if st.button(
-            "B) カード名＋色で検索",
+            "[B] カード名＋色で検索",
             key="modeB_card",
             type="primary" if isB else "secondary",
             use_container_width=True,
@@ -530,33 +555,39 @@ if st.session_state.step == 1:
     if st.session_state.search_mode == "A":
         st.subheader("Step 1A　カード番号で検索")
 
-        col1, col2 = st.columns([2, 1])
-        with col1:
-            deck_title = st.text_input(
-                "デッキ名（例：青紫ルフィ）",
-                value=st.session_state.get("deck_title", "青紫ルフィ"),
-                placeholder="青紫ルフィ",
-                key="deck_title_input",
-            )
-        with col2:
-            card_no = st.text_input(
-                "カード番号（例：OP05-067）",
-                value=st.session_state.get("card_no_input", "OP05-067"),
-                placeholder="OP05-067",
-                key="card_no_input_box",
+        # ▼ デッキ名はStep1では不要。接頭語＋番号だけにする
+        c1, c2 = st.columns([1, 3], gap="small")
+
+        with c1:
+            prefix = st.selectbox(
+                "接頭語",
+                PREFIX_OPTIONS,
+                index=PREFIX_OPTIONS.index(st.session_state.get("card_prefix", "OP")) if st.session_state.get("card_prefix", "OP") in PREFIX_OPTIONS else 0,
+                key="card_prefix",
             )
 
-        st.session_state.deck_title = deck_title
-        st.session_state.card_no_input = card_no
+        with c2:
+            number_only = st.text_input(
+                "カード番号（例：05-067）",
+                value=st.session_state.get("card_number_only", "05-067"),
+                placeholder="05-067",
+                key="card_number_only",
+            )
+
+        # 組み立て（例：OP + 05-067 => OP05-067）
+        card_no_norm = f"{prefix}{number_only}".strip().upper()
+
+        # 状態を保持（次回も残す）
+        st.session_state.card_no_input = card_no_norm  # 一応フルも保存
+        st.session_state.card_prefix = prefix
+        st.session_state.card_number_only = number_only
 
         if st.button("収録弾を検索する", type="primary", key="search_by_no"):
             st.session_state.return_tab = "A"
-            card_no_norm = card_no.strip().upper()
 
-            if not deck_title.strip():
-                st.error("デッキ名が空です。")
-            elif not CARDNO_PATTERN.search(card_no_norm):
-                st.error("カード番号の形式が違うかも（例：OP05-067）")
+            # 入力バリデーション（番号だけチェック）
+            if not re.fullmatch(r"\d{2}-\d{3}", number_only.strip()):
+                st.error("番号の形式が違うかも（例：05-067）")
             else:
                 with st.spinner("公式カードリストから検索中…"):
                     try:
@@ -568,6 +599,7 @@ if st.session_state.step == 1:
                     except Exception as e:
                         st.session_state.card_data = None
                         st.error(f"検索に失敗：{e}")
+
 
     # -----------------------------
     # B) カード名＋色で候補検索
@@ -628,7 +660,7 @@ if st.session_state.step == 1:
 # -----------------------------
 if st.session_state.step == 2 and st.session_state.card_data:
     data = st.session_state.card_data
-    deck_title = st.session_state.get("deck_title", "青紫ルフィ")
+    deck_title = st.session_state.get("deck_title", "")
 
     st.subheader("Step 2　結果を見てコメントを作る")
 
@@ -661,6 +693,14 @@ if st.session_state.step == 2 and st.session_state.card_data:
         st.info("画像が取れなかった（構造変更の可能性あり）")
 
     st.divider()
+
+    deck_title = st.text_input(
+        "デッキ名（任意・投稿用）",
+        value=st.session_state.get("deck_title", ""),
+        placeholder="例：青紫ルフィ",
+        key="deck_title_step2",
+    )
+    st.session_state.deck_title = deck_title
 
     # コメント・ハッシュタグ
     comment = st.text_input("コメント（例：※ 再録多め。シングル買い検討ライン）", value="※ 再録多め。", key="comment_input")
@@ -721,3 +761,29 @@ if st.session_state.step == 2 and st.session_state.card_data:
 
 
     st.markdown("</div>", unsafe_allow_html=True)
+
+# ============================
+# Floating TOP button (always)
+# ============================
+st.markdown(
+    """
+    <form method="post">
+      <button class="topFab" name="go_top" value="1" aria-label="TOPへ戻る">↑</button>
+    </form>
+    """,
+    unsafe_allow_html=True,
+)
+
+# クリックされたらTOPへ
+q = st.query_params
+if q.get("go_top") == ["1"]:
+    st.session_state.step = 1
+    st.session_state.search_mode = "A"
+    st.session_state.card_data = None
+    st.session_state.generated_text = ""
+    # 必要なら候補も消す
+    st.session_state.pop("candidates", None)
+    # クエリを戻す
+    st.query_params.clear()
+    st.rerun()
+
