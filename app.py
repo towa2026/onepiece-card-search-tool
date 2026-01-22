@@ -701,7 +701,7 @@ if st.session_state.step == 2 and st.session_state.card_data:
     data = st.session_state.card_data
     deck_title = st.session_state.get("deck_title", "")
 
-    st.subheader("Step 2　検索結果")
+    st.subheader("収録弾検索結果")
 
     st.markdown(
         f"**{data['card_no']}**  **{data['card_name']}**  "
@@ -709,8 +709,8 @@ if st.session_state.step == 2 and st.session_state.card_data:
         unsafe_allow_html=True,
     )
 
-    # 収録パック
-    st.write("### ▶︎ 収録パック")
+    # 収録弾
+    st.write("### ▶︎ 収録弾")
     if data["packs"]:
         for p in data["packs"]:
             st.markdown(f"- {p}")
