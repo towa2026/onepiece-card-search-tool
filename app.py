@@ -236,9 +236,9 @@ div[data-testid="stTextArea"] div[data-baseweb="textarea"] > div:focus-within {
     gap: 10px !important;
   }
   .imgGrid2 div[data-testid="column"]{
-    width: calc(50% - 5px) !important;
-    flex: 0 0 calc(50% - 5px) !important;
-    min-width: calc(50% - 5px) !important;
+    width: calc(33% - 5px) !important;
+    flex: 0 0 calc(33% - 5px) !important;
+    min-width: calc(33% - 5px) !important;
   }
 }
 
