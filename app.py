@@ -4,6 +4,7 @@ from typing import List, Dict, Optional, Tuple
 
 import requests
 import streamlit as st
+import streamlit.components.v1 as components
 from bs4 import BeautifulSoup
 
 from pathlib import Path
